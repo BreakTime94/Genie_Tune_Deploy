@@ -1,0 +1,195 @@
+scalar Upload
+
+## 1-1. Register
+input MemberRegisterRequestDTO {
+  email: String!
+  password: String!
+  bizNumber: String!
+  representativeName: String!
+  openingDate: String!
+  organizationName: String!
+  contactName: String!
+  agreedTermsCategory:[String!]
+  businessFile: Upload!
+  employmentFile: Upload!
+}
+# 등록 상태 Register ResponseDTO에 값 포함(상태에 따라 다른 페이지 보내줘야하므로)
+enum RegisterStatus {
+  PENDING, APPROVED, REJECTED, CANCELLED
+}
+
+# 계정 상태에 따라 다른 페이지 보내줌
+enum AccountStatus {
+    ACTIVE, INACTIVE, DELETED
+}
+
+type MemberRegisterResponseDTO {
+  email: String!
+  bizNumber: String!
+  organizationName: String!
+  contactName: String!
+  registeredAt: String!
+  registerStatus: RegisterStatus!
+  accountStatus: AccountStatus!
+}
+
+# 1-2 Register 내 사업자등록증 번호 조회 로직
+input BusinessValidationCheckRequestDTO {
+  bizNumber: String!
+  representativeName: String!
+  openingDate: String!
+}
+
+type BusinessValidationCheckResponseDTO {
+  bizNumber: String!
+  validation: Boolean!
+  validationMsg: String
+  businessStatus: String!
+  businessStatusCode: String!
+}
+
+# 1-3 6자리 이메일 인증코드 발송
+input MemberVerifyEmailRequestDTO {
+  email: String!
+  type: String!
+}
+
+type MemberVerifyEmailResponseDTO {
+  result: Boolean!
+}
+
+# 1-4 인증코드 확인
+input MemberVerifyCodeRequestDTO {
+  email: String!
+  code: String!
+  type: String!
+}
+
+type MemberVerifyCodeResponseDTO {
+  result: Boolean!
+}
+
+# 1-5 이메일 중복 체크
+input EmailCheckRequestDTO {
+  email: String!
+}
+
+type EmailCheckResponseDTO {
+  result: Boolean!
+}
+
+## 2 Login 로직
+
+enum Role {
+  MEMBER, SUBSCRIBER, ADMIN
+}
+
+# LoginRequest DTO
+input MemberLoginRequestDTO {
+  email: String!
+  password: String!
+}
+
+# LoginResponseDTO
+type MemberLoginResponseDTO {
+  login: Boolean!
+}
+
+# 3 로그인 성공 이후 실제 멤버 정보 GetResponseDTO, Update 이후에도 활용
+type MemberGetResponseDTO {
+  email: String!
+  accountStatus: AccountStatus!
+  bizNumber: String!
+  organizationName: String!
+  representativeName: String!
+  contactName: String!
+  registerStatus: RegisterStatus!
+  role: Role!
+  approvedAt: String
+  isTempPassword: Boolean!
+  passwordUpdatedAt: String!
+}
+
+# 4 Update
+input UpdateInfoRequestDTO {
+  representativeName: String!
+  contactName: String!
+}
+
+# 4-1 password Update 용 기존 비밀번호 check
+input PasswordCheckRequestDTO {
+  password: String!
+}
+
+type PasswordCheckResponseDTO {
+  result: Boolean!
+}
+
+# 4-2 NewPassword 입력
+input NewPasswordRequestDTO {
+  newPassword: String!
+}
+
+type NewPasswordResponseDTO {
+  result: Boolean!
+}
+
+# 5-1 Email 찾기
+input FindEmailRequestDTO {
+  bizNumber: String!
+  contactName: String!
+}
+
+type FindEmailResponseDTO {
+  email: String!
+}
+
+# 5-2 비밀번호 초기화(찾기)
+input ResetPasswordRequestDTO {
+  email: String!
+  bizNumber:String!
+  contactName: String!
+}
+
+type ResetPasswordResponseDTO {
+  result: Boolean!
+}
+
+#6 회원 탈퇴
+input DeleteRequestDTO {
+  message: String!
+}
+
+type DeleteResponseDTO {
+  result: Boolean!
+}
+
+# Member 정보 조회 쿼리
+type Query{
+  me: MemberGetResponseDTO
+}
+type Mutation {
+  # 1. 회원가입
+  sendVerificationEmail(input:MemberVerifyEmailRequestDTO!): MemberVerifyEmailResponseDTO
+  verifyCode(input: MemberVerifyCodeRequestDTO!): MemberVerifyCodeResponseDTO
+  checkBizNumber(input:BusinessValidationCheckRequestDTO!): BusinessValidationCheckResponseDTO
+  checkEmail(input:EmailCheckRequestDTO!): EmailCheckResponseDTO
+  register(input:MemberRegisterRequestDTO!): MemberRegisterResponseDTO
+  # 2. 로그인
+  login(input:MemberLoginRequestDTO!): MemberLoginResponseDTO
+  # 3. 로그아웃
+  logout: Boolean!
+  # 4. 정보수정
+  update(input:UpdateInfoRequestDTO!): MemberGetResponseDTO
+  checkPassword(input: PasswordCheckRequestDTO!): PasswordCheckResponseDTO
+  saveNewPassword(input: NewPasswordRequestDTO!): NewPasswordResponseDTO
+
+  # 5. 이메일 찾기
+  findEmail(input:FindEmailRequestDTO!): FindEmailResponseDTO
+
+  #6. 비밀번호 초기화(찾기)
+  resetPassword(input:ResetPasswordRequestDTO!): ResetPasswordResponseDTO
+
+  #7. 회원탈퇴
+  withdraw(input:DeleteRequestDTO!): DeleteResponseDTO
+}

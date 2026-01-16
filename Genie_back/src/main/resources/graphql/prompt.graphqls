@@ -1,0 +1,18 @@
+input GenerateStoryRequestDTO {
+  accessIdCharacter: [String!]!
+  originalContent: [String!]!
+  webtoonGroupId: String!
+}
+
+type GenerateStoryResponseDTO {
+  originalContent: String!
+  refinedContent: String!
+  revisedPrompt: String!
+  imageUrl: String
+  errorMessage: String
+  promptCount:Int
+}
+
+extend type Mutation {
+  generateStory(input: GenerateStoryRequestDTO!): GenerateStoryResponseDTO!
+}

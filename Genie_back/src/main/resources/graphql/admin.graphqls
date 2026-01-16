@@ -1,0 +1,138 @@
+
+type RegisterRequestResponseDTO {
+  # Member 정보
+  email: String!
+  organizationName: String!
+  bizNumber: String!
+  representativeName: String!
+  contactName: String!
+  role: Role!
+  accountStatus: AccountStatus!
+  approvedAt: String
+
+  # RegisterRequest 정보
+  rejectReason: String
+  registerStatus: RegisterStatus!
+  createdAt: String!
+  checkedAt: String
+
+  businessLicenseUrl: String
+  employmentCertUrl: String
+}
+# 검색어 타입
+enum MemberSearchType {
+  BIZ_NUMBER          # 사업자등록증번호로 검색
+  EMAIL         # 이메일로 검색
+  ORGANIZATION_NAME  # 기관명으로 검색
+  REPRESENTATIVE_NAME # 대표자 명
+  ALL           # 전체 통합 검색
+}
+
+# 검색 및 필터 조건을 담는 객체
+input MemberSearchCondition {
+  memberSearchType: MemberSearchType!
+  keyword: String
+  registerStatus: RegisterStatus
+  role: Role
+}
+
+# 페이지 응답 요청 input
+input MemberPageRequest {
+  page: Int = 1
+  size: Int = 10
+  condition: MemberSearchCondition
+}
+
+# 페이지 응답을 위한 타입 추가
+type MemberPageResponse {
+  content: [RegisterRequestResponseDTO!]!
+  totalPages: Int!
+  totalElements: Int!
+  currentPage: Int!
+  isFirst: Boolean!
+  isLast: Boolean!
+}
+
+input JoinApplyRequestDTO {
+  email: String!
+  registerStatus: RegisterStatus!
+  rejectReason: String
+}
+
+type JoinApplyResponseDTO {
+  result: Boolean!
+}
+
+## 매출 조회 관련
+
+# 2. 요청(Input) 타입 정의
+input AdminSalesPageRequestDTO {
+  page: Int!
+  size: Int!
+  salesSearchCondition: SalesSearchCondition
+}
+
+input SalesSearchCondition {
+  salesSearchType: SalesSearchType
+  keyword: String
+  payStatus: PayStatus
+  pgType: String
+  cardCompany: String
+  from: String
+  to: String
+  displayName: String
+}
+
+# 3. 응답(Type) 타입 정의
+type AdminSalesPageResponseDTO {
+  content: [PayInfoResponseDTO!]
+  totalPages: Int
+  totalElements: Float!
+  currentPage: Int
+  isFirst: Boolean
+  isLast: Boolean
+}
+
+type PayInfoResponseDTO {
+  organizationName: String!
+  payStatus: PayStatus!
+  amount: Float!
+  pgType: String!
+  cardCompany: String
+  reason: String
+  displayName: String!
+}
+
+# 4. Enum 및 스칼라 정의
+enum SalesSearchType {
+  ORDER_ID
+  ORGANIZATION_NAME
+}
+
+enum PayStatus {
+  PAID
+  FAILED
+  CANCELLED
+  PAY_PENDING
+}
+
+input HandleStatusRequestDTO {
+  email: String!
+  role: String!
+}
+
+type HandleStatusResponseDTO {
+  result: Boolean!
+}
+
+
+extend type Query {
+  # page는 1부터 시작하도록 프론트와 약속
+  getAllMembers(input:MemberPageRequest!): MemberPageResponse!
+  getAllSales(input: AdminSalesPageRequestDTO): AdminSalesPageResponseDTO
+}
+
+extend type Mutation {
+  handleRegister(input:JoinApplyRequestDTO): JoinApplyResponseDTO
+  handleMemberRole(input:HandleStatusRequestDTO): HandleStatusResponseDTO!
+}
