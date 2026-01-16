@@ -8,7 +8,7 @@ public record OpenAIRequestDTO(
   @JsonProperty("access_id")
   String accessId, // user의 accessId 앞에 6자리
   @JsonProperty("original_content")
-  String originalContent, //금칙어 기반 필터링 되었거나 원본이거나
+  String originalContent, //얘는 filteredContent임. 원본일 수도 있고 한 번 거쳐진 친구일 수도 있고
   @JsonProperty("is_slang")
   boolean isSlang, // 금칙어 기반 필터링 여부
   @JsonProperty("access_id_character")

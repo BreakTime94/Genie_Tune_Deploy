@@ -72,14 +72,14 @@ public class PromptServiceImpl implements PromptService {
     log.info("캐릭터 묘사에 slang 여부 : {} 원본 content 내에 slang 여부 : {}", isSlangCharacter, isSlangContent);
 
     //4. 문자열 리스트 -> 하나의 문장 결합
-    String character = characterFilterResults.stream().map(WordFilterResult::resolveWord).collect(Collectors.joining(" "));
-    String original = originalFilterResult.stream().map(WordFilterResult::resolveWord).collect(Collectors.joining(" "));
-    log.info("캐릭터 묘사: {}", character);
-    log.info("원본 프롬프트: {}", original);
+    String filteredCharacter = characterFilterResults.stream().map(WordFilterResult::resolveWord).collect(Collectors.joining(" "));
+    String filteredContent = originalFilterResult.stream().map(WordFilterResult::resolveWord).collect(Collectors.joining(" "));
+    log.info("캐릭터 묘사: {}", filteredCharacter);
+    log.info("원본 프롬프트: {}", filteredContent);
 
     //5. Prompt 먼저 저장 및 저장한 Prompt 반환
     ServiceAccess serviceAccess = serviceAccessRepository.findByAccessId(accessId).orElseThrow(() -> new GlobalException(ErrorCode.SERVICE_ACCESS_NOTFOUND));
-    PreRegisterPromptDTO promptDTO = new PreRegisterPromptDTO(serviceAccess, original, PromptStatus.WAITING, isSlangCharacter);
+    PreRegisterPromptDTO promptDTO = new PreRegisterPromptDTO(serviceAccess, originalSentence, filteredContent, PromptStatus.WAITING, isSlangContent);
     Prompt prompt = promptRepository.save(promptMapper.toEntityForRegister(promptDTO));
 
     //5-1. Character Result를 전부 담은 List 생성
@@ -102,8 +102,8 @@ public class PromptServiceImpl implements PromptService {
     promptLogRepository.saveAll(allLogs);
 
     //7. OpenAIRequestDTO 객체 생성 Python에 보낼 때는, SlangContent가 있었는지 여부만 담아서 보냄
-
-    return new OpenAIRequestDTO(accessId, original, isSlangContent, character);
+    boolean isAnySlang = isSlangCharacter || isSlangContent;
+    return new OpenAIRequestDTO(accessId, filteredContent, isAnySlang, filteredCharacter);
   }
 
   private boolean hasSlangWord (List<WordFilterResult> wordFilterResults) {
@@ -112,7 +112,7 @@ public class PromptServiceImpl implements PromptService {
 
   @Transactional
   public Prompt finalSave(OpenAIResponseDTO dto) {
-    Prompt savedPrompt = promptRepository.findByOriginalContentAndServiceAccess(dto.originalContent(), dto.accessId()).orElseThrow(() -> new GlobalException(ErrorCode.PROMPT_NOT_FOUND));
+    Prompt savedPrompt = promptRepository.findByFilteredContentAndServiceAccess(dto.originalContent(), dto.accessId()).orElseThrow(() -> new GlobalException(ErrorCode.PROMPT_NOT_FOUND));
     savedPrompt.update(dto.filteredContent(), dto.refinedContent(), dto.revisedPrompt(), PromptStatus.APPROVED);
     return savedPrompt;
   }

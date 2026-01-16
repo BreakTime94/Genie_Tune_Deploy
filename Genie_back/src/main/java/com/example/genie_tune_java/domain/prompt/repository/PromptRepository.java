@@ -18,4 +18,13 @@ public interface PromptRepository extends JpaRepository<Prompt, Long> {
           "ORDER BY p.createdAt DESC " +
           "LIMIT 1")
   Optional<Prompt> findByOriginalContentAndServiceAccess(@Param("originalContent") String originalContent, @Param("accessId") String accessId);
+
+  @Query("SELECT p FROM Prompt p " +
+          "JOIN FETCH p.serviceAccess sa " +
+          "WHERE p.filteredContent = :filteredContent " +
+          "AND sa.accessId = :accessId " +
+          "AND p.promptStatus = 'WAITING' " +
+          "ORDER BY p.createdAt DESC " +
+          "LIMIT 1")
+  Optional<Prompt> findByFilteredContentAndServiceAccess(@Param("filteredContent") String filteredContent, @Param("accessId") String accessId);
 }

@@ -47,24 +47,30 @@ public class WordRuleCache {
 
   // filter 여부와, 치환 모든 것이 다 기록되어야 해서 별도의 DTO 생성
   public WordFilterResult filterWord(String word) {
-    GetWordRulesResponseDTO rule = cacheMap.get(word);
+    String originalWord = word;  // 원본 단어
+    String filteredWord = word; // 필터링을 거친 단어
+    String reason = null;
+    boolean isSlang = false;
 
-    // 즉 저 Map에 key 값이 존재하지 않는다 -> 금칙어가 없다.
-    if (rule == null) {
-      return new WordFilterResult(
-              word,
-              word,
-              false,
-              null
-      );
+    // 맵에 저장된 모든 금칙어 키셋을 하나씩 꺼내서 확인
+    for (String forbidden : cacheMap.keySet()) {
+      // ex) 이 부분이 핵심! "개같은"이 "개"를 포함하고 있는가?
+      if (originalWord.contains(forbidden)) {
+        GetWordRulesResponseDTO rule = cacheMap.get(forbidden);
+
+        //대체 문장이 null일수 있다. (아예 빈칸 처리)
+        String replacement = (rule.cleanWord() != null) ? rule.cleanWord() : "";
+
+        // 포함되어 있다면 치환본으로 교체 ("개같은" -> "안좋은 등의 단어")
+        filteredWord = filteredWord.replace(forbidden, replacement);
+        
+        isSlang = true;
+        reason = rule.reason();
+        // 여러 금칙어가 섞여 있을 수 있으니 break 하지 않고 계속 순회합니다.
+      }
     }
 
-    return new WordFilterResult(
-            word,
-            rule.cleanWord(),
-            true,
-            rule.reason()
-    );
-  }
+    return new WordFilterResult(originalWord, filteredWord, isSlang, reason);
 
+  }
 }
