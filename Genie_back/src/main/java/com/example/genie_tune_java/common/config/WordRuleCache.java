@@ -63,7 +63,7 @@ public class WordRuleCache {
 
         // 포함되어 있다면 치환본으로 교체 ("개같은" -> "안좋은 등의 단어")
         filteredWord = filteredWord.replace(forbidden, replacement);
-        
+
         isSlang = true;
         reason = rule.reason();
         // 여러 금칙어가 섞여 있을 수 있으니 break 하지 않고 계속 순회합니다.
