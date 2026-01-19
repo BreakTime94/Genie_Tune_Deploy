@@ -1,6 +1,6 @@
 ## GenieTune
 
-웹툰 AI 창작 교육을 통해 학생들의 문해력과 사고력을 키우는 교육 플랫폼
+### 웹툰 AI 창작 교육을 통해 학생들의 문해력과 사고력을 키우는 교육 플랫폼
 
 ### 프로젝트 개요
 - 프로젝트 목적: AI 활용 웹툰 제작 교육을 통해 올바른 활용 인식을 함양시키며 올바른 문장 활용 가이드 라인 제시
@@ -10,7 +10,7 @@
 - Frontend:	UI/UX 설계, Next.js 기반 서비스 흐름 구현
 - Backend: Spring Boot API, GraphQL, 인증/보안, 결제 
 - AI: Python 기반 텍스트 순화·이미지 생성 파이프라인
-- 담당역할: Backend
+- 담당역할: #### Backend
 
 #### 🛠 기술 스택
 ##### Frontend
@@ -49,23 +49,23 @@
 
 - Python 연동 등
 
-AI / Model
+##### AI / Model
 
-Python (FastAPI)
+- Python (FastAPI)
 
-KoBART Fine-tuning (한국어 문장 순화)
+- KoBART Fine-tuning (한국어 문장 순화)
 
-OpenAI DALL·E 3
+- OpenAI DALL·E 3
 
-Diffusers / Transformers / Torch 등
+- Diffusers / Transformers / Torch 등
 
-Infra
+##### Infra
 
-Oracle Cloud (Ubuntu)
+- Oracle Cloud (Ubuntu)
 
-Docker / Docker Compose
+- Docker / Docker Compose
 
-Nginx (Reverse Proxy)
+- Nginx (Reverse Proxy)
 
 ### TABLE 정의서
 <img width="985" height="508" alt="image" src="https://github.com/user-attachments/assets/610ecb6e-c5ca-4066-9cef-1e65d0eb7fb9" />
@@ -77,3 +77,6 @@ Nginx (Reverse Proxy)
 <img width="954" height="455" alt="image" src="https://github.com/user-attachments/assets/ff580e4c-b307-483f-bcce-a894b01b337a" />
 
 <img width="986" height="467" alt="image" src="https://github.com/user-attachments/assets/2dfeaa01-8dc4-40bc-ba6f-0e1901366ca6" />
+
+### 참고사항
+- 현재 Python 파트는 aws server 유지 비용 이슈로 AI 담당자가 서버를 내린상태 (로컬 PC 및 github에 코드 가지고 있음)
