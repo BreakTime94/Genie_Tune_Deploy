@@ -3,7 +3,7 @@
 import ImageFailedCard from "@/components/student/learn/ImageFailedCard";
 
 type ChatMessage = {
-    id: string;
+    id: string | number;
     sender: 'bot' | 'user';
     type: 'text' | 'button' | 'image' | 'image-loading'| 'image-failed';
     content?: string;

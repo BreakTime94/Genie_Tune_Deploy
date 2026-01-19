@@ -17,7 +17,8 @@ public class CORSConfig {
     config.setAllowCredentials(true);
     config.setAllowedOrigins(List.of(
             "http://localhost:3000", // React
-            "http://localhost:8000" // Python
+            "http://localhost:8000", // Python
+            "https://genie.climbjava.com"
     ));
     config.setAllowedMethods(List.of(
             "GET", "POST", "OPTIONS"

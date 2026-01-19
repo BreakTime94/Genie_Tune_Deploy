@@ -1,0 +1,58 @@
+version: "3.8"
+
+############################################
+# Genie Tune 전체 애플리케이션 구성
+# (nginx + front + back)
+############################################
+
+services:
+  ##########################################
+  # 1. Nginx (Reverse Proxy)
+  ##########################################
+  nginx:
+    build:
+      context: ./nginx              # nginx/Dockerfile 사용
+    container_name: genie_nginx     # 사람이 보기 쉬운 이름 (선택)
+    ports:
+      - "80:80"                     # 외부 80 → nginx 80
+    depends_on:
+      - genie_front
+      - genie_back
+    networks:
+      - genie_net
+
+  ##########################################
+  # 2. Frontend (Next.js ServerSideRendering)
+  ##########################################
+  genie_front:
+    build:
+      context: ./Genie_front        # front Dockerfile 위치
+    container_name: genie_front     # (선택) 보기용 이름
+    expose:
+      - "3000"                      # nginx에서만 접근 (외부 노출 X)
+    environment:
+      # Next.js에서 사용할 환경변수들 (필요 시 추가)
+      - NODE_ENV=production
+    networks:
+      - genie_net
+
+  ##########################################
+  # 3. Backend (Spring Boot)
+  ##########################################
+  genie_back:
+    build:
+      context: ./Genie_back         # back Dockerfile 위치
+    container_name: genie_back
+    expose:
+      - "8080"                      # nginx에서만 접근
+    env_file:
+      - ./env/genie.env     # 서버에 직접 옮겨둔 .env
+    networks:
+      - genie_net
+
+############################################
+# 공통 네트워크
+############################################
+networks:
+  genie_net:
+    driver: bridge

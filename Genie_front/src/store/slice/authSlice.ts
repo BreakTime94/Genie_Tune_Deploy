@@ -55,8 +55,17 @@ const authSlice = createSlice({
                 state.user = action.payload;
             })
             .addCase(loginThunk.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload ?? "LOGIN_FAILED";
+              state.loading = false;
+
+              const payload = action.payload as unknown;
+
+              if (payload && typeof payload === 'object' && 'message' in payload) {
+                state.error = String((payload as { message: any }).message);
+              } else if (typeof payload === 'string') {
+                state.error = payload;
+              } else {
+                state.error = "LOGIN_FAILED";
+              }
             })
 
             // 초기 인증 (새로고침)

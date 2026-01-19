@@ -78,7 +78,7 @@ const uploadLink = new ApolloLink((operation, forward) => {
         }
 
         // fetch 요청
-        fetch('http://localhost:8080/graphql-upload', {
+        fetch('/graphql-upload', {
             method: 'POST',
             body: formData,
             credentials: 'include',
@@ -108,7 +108,7 @@ const uploadLink = new ApolloLink((operation, forward) => {
 });
 
 const httpLink = new HttpLink({
-    uri: "http://localhost:8080/graphql",
+    uri: "/graphql",
     credentials: "include",
 });
 

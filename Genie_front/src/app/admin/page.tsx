@@ -118,7 +118,7 @@ export default function AdminDashboardPage() {
                     가입 / 승인 추이
                 </h2>
                 <div className="h-[220px] flex items-center justify-center text-gray-400 text-sm">
-                    <SignupApprovalChart members={recentPending}/>
+                    <SignupApprovalChart />
                 </div>
             </section>
 
